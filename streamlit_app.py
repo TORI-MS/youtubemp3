@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 st.title("유튜브 MP3 다운로더")
-st.write("최씨가 인증한 해킹 없는 안전 다운로더")
+st.write("최씨가 인증한 안전 다운로더")
 
 # 사용자 링크 입력
 url = st.text_input("유튜브 영상 링크를 입력하세요:")
@@ -32,6 +32,8 @@ if st.button("MP3 변환 및 다운로드 준비"):
           # 임시 폴더 경로에 파일 이름 지정
           "outtmpl": os.path.join(temp_dir, "%(title)s.%(ext)s"),
           "restrictfilenames": True,  # 파일 이름에 특수문자 제거
+          # 유튜브 403 에러(차단) 우회를 위한 클라이언트 설정
+          "extractor_args": {"youtube": {"player_client": ["web", "mweb"]}},
       }
 
       try:
@@ -41,7 +43,6 @@ if st.button("MP3 변환 및 다운로드 준비"):
         ):
           with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
-            title = info_dict.get("title", "audio")
             # 변환된 파일명 찾기
             audio_filename = f"{ydl.prepare_filename(info_dict)}"
             # 확장자를 mp3로 변경
@@ -69,4 +70,7 @@ if st.button("MP3 변환 및 다운로드 준비"):
           st.error("파일 변환 중 오류가 발생했습니다.")
 
       except Exception as e:
-        st.error(f"에러가 발생했습니다: {e}")
+        st.error(
+            f"에러가 발생했습니다: {e}\n\n(참고: 유튜브 측의 보안 정책이나"
+            " 클라우드 서버 IP 차단으로 인해 발생할 수 있습니다.)"
+        )
