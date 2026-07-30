@@ -8,8 +8,8 @@ st.set_page_config(
     page_title="유튜브 MP3 변환기", page_icon="🎵", layout="centered"
 )
 
-st.title("유튜브 MP3 다운로더")
-st.write("최씨가 인증한 안전 다운로더")
+st.title("🎵 유튜브 to MP3 다운로더")
+st.write("유튜브 링크를 입력하면 MP3 음원 파일로 변환해 드립니다.")
 
 # 사용자 링크 입력
 url = st.text_input("유튜브 영상 링크를 입력하세요:")
@@ -21,7 +21,8 @@ if st.button("MP3 변환 및 다운로드 준비"):
     # 임시 디렉토리를 만들어 파일 저장 후 처리
     with tempfile.TemporaryDirectory() as temp_dir:
       ydl_opts = {
-          "format": "bestaudio/best",
+          # 포맷 오류(Requested format is not available)를 막기 위해 가장 범용적인 설정으로 변경
+          "format": "best/bestaudio",
           "postprocessors": [
               {
                   "key": "FFmpegExtractAudio",
@@ -32,7 +33,7 @@ if st.button("MP3 변환 및 다운로드 준비"):
           # 임시 폴더 경로에 파일 이름 지정
           "outtmpl": os.path.join(temp_dir, "%(title)s.%(ext)s"),
           "restrictfilenames": True,  # 파일 이름에 특수문자 제거
-          # 유튜브 403 에러(차단) 우회를 위한 클라이언트 설정
+          # 유튜브 차단 우회 및 안정성 향상을 위한 클라이언트 설정
           "extractor_args": {"youtube": {"player_client": ["web", "mweb"]}},
       }
 
